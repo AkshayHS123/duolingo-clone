@@ -13,13 +13,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install Trivy
+      - name: Install Trivy (latest release)
         run: |
-          sudo apt-get update && sudo apt-get install -y wget
-          wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.49.1_Linux-64bit.deb
-          sudo dpkg -i trivy_0.49.1_Linux-64bit.deb
+          wget -q https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.51.1_Linux-64bit.deb
+          sudo dpkg -i trivy_0.51.1_Linux-64bit.deb
 
-      - name: Run Trivy vulnerability + license scanner
+      - name: Run Trivy vulnerability and license scanner
         run: |
           trivy fs . \
             --scanners vuln,license \
