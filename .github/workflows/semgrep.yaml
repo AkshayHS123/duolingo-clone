@@ -29,20 +29,8 @@ jobs:
       - name: Run Semgrep and save JSON results
         run: semgrep scan --config p/default --json > semgrep_results.json
 
-      - name: Convert JSON to simple HTML
-        run: |
-          echo '<html><body><pre>' > semgrep_results.html
-          cat semgrep_results.json | jq '.' >> semgrep_results.html
-          echo '</pre></body></html>' >> semgrep_results.html
-
       - name: Upload JSON results
         uses: actions/upload-artifact@v4
         with:
           name: semgrep-results-json
           path: semgrep_results.json
-
-      - name: Upload HTML results
-        uses: actions/upload-artifact@v4
-        with:
-          name: semgrep-results-html
-          path: semgrep_results.html
