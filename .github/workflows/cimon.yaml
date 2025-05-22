@@ -1,0 +1,12 @@
+name: Cimon Runtime Security
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  cimon:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: cycodelabs/cimon-action@v0
