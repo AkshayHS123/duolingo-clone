@@ -1,4 +1,4 @@
-name: Trivy Container Scan
+name: Trivy SPDX and JSON SBOM generation
 
 on:
   push:
@@ -7,37 +7,31 @@ on:
       - master
 
 jobs:
-  container_scanning:
+  sbom_generation:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Run Trivy vulnerability scan (JSON)
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'json'
-          output: 'trivy-results.json'
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'MEDIUM'
-        continue-on-error: true
+      # Generate Trivy SBOM in JSON format
+      - name: Generate Trivy SBOM JSON
+        run: trivy fs --format json --output trivy-results.json .
 
-      - name: Run Trivy scan to generate SPDX
+      # Generate Trivy SBOM in SPDX format
+      - name: Generate Trivy SBOM SPDX
         run: trivy fs --format spdx --output trivy-results.spdx .
 
-      - name: Upload Trivy JSON results
+      # Upload JSON SBOM
+      - name: Upload Trivy JSON SBOM
         uses: actions/upload-artifact@v4
         with:
-          name: trivy-scan-results-json
+          name: trivy-sbom-json
           path: trivy-results.json
 
-      - name: Upload Trivy SPDX results
+      # Upload SPDX SBOM
+      - name: Upload Trivy SPDX SBOM
         uses: actions/upload-artifact@v4
         with:
-          name: trivy-scan-results-spdx
+          name: trivy-sbom-spdx
           path: trivy-results.spdx
