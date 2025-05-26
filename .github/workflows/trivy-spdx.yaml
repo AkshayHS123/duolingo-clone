@@ -1,0 +1,43 @@
+name: Trivy Container Scan
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  container_scanning:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run Trivy vulnerability scan (JSON)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'json'
+          output: 'trivy-results.json'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'MEDIUM'
+        continue-on-error: true
+
+      - name: Run Trivy scan to generate SPDX
+        run: trivy fs --format spdx --output trivy-results.spdx .
+
+      - name: Upload Trivy JSON results
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-scan-results-json
+          path: trivy-results.json
+
+      - name: Upload Trivy SPDX results
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-scan-results-spdx
+          path: trivy-results.spdx
